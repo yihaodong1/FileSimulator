@@ -1,0 +1,50 @@
+# 首先忽略所有文件
+*
+!*/
+
+# 然后只包含需要的目录和文件
+!/include/**
+!/src/**
+!/CMakeLists.txt
+!/.gitignore
+!README.md
+!README.html
+
+# 特别忽略一些不需要的文件
+.DS_Store
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+
+# 继续忽略构建目录
+/build/
+/out/
+/bin/
+/lib/
+
+# VS Code configuration
+.vscode/
+
+# Compressed files
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+
+# IDE specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Cache and temp files
+*.cache
+*.log
+*.tmp
+
+# 添加下面这行来确保这些文件/文件夹不会被重新追踪
+!.gitignore
