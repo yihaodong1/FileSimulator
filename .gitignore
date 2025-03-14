@@ -9,6 +9,8 @@
 !/.gitignore
 !README.md
 !README.html
+!PA-1-CN.pdf
+!PA-1-EN.pdf
 
 # 特别忽略一些不需要的文件
 .DS_Store
