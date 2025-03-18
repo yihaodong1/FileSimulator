@@ -49,4 +49,5 @@ public:
 
     // helper function for change dir, no useful, use search directly
     FileObj* resolvePath(const string& path);
+    void display();
 };
