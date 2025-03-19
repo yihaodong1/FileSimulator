@@ -22,10 +22,11 @@ File* FileSystem::createFile(const string& name) {
     // TODO: Create a new file in current directory, return File* if create successfully, otherwise nullptr
     // note 1: check if name already exists
     // note 2: generate new inode via InodeFactory, and update config_table
-    string fullname = cur->getPath()+name;
-    if(config_table.find(fullname) != config_table.end()){
-        return nullptr;
-    }
+
+    /*string fullname = cur->getPath()+name;*/
+    /*if(config_table.find(fullname) != config_table.end()){*/
+    /*    return nullptr;*/
+    /*}*/
     /*std::vector<FileObj *> v = cur->getAll();*/
     /*for(auto it = v.begin(); it != v.end(); it++){*/
     /*    if((*it)->getName() == name){*/
@@ -33,8 +34,10 @@ File* FileSystem::createFile(const string& name) {
     /*    }*/
     /*}*/
     uint64_t i = search(name, "file");
-    if(i)
+    if(i){
+        std::cout<<"File "+name+" already exists\n";
         return nullptr;
+    }
     i = InodeFactory::generateInode();
     File *f = new File(name, "file", username, i, cur);
     if(cur->add(f)){
@@ -54,12 +57,13 @@ bool FileSystem::deleteFile(const string& name, const string& user){
     if(i==0)
         return false;
     FileObj* f = cur->getChild(i);
-    if(f->getOwner() == username){
+    if(f->getOwner() == username || username == "root"){
         if(cur->remove(i)){
             config_table.erase(f->getPath());
             return true;
         }
-    }
+    }else
+        std::cout<<"Permisssion denied\n";
     return false;
 }
 
@@ -70,8 +74,10 @@ Directory* FileSystem::createDir(const string& name) {
     // note 2: generate new inode via InodeFactory, and update config_table
 
     uint64_t i = search(name, "directory");
-    if(i)
+    if(i){
+        std::cout<<"Directory "+name+" already exists\n";
         return nullptr;
+    }
     i = InodeFactory::generateInode();
     Directory *d = new Directory(name, username, i, cur);
     if(cur->add(d)){
@@ -91,7 +97,7 @@ bool FileSystem::deleteDir(const string& name,const string& user, bool recursive
     if(i == 0)
         return false;
     FileObj* f = cur->getChild(i);
-    if(f->getOwner() == username){
+    if(f->getOwner() == username || username == "root"){
         if(recursive){
             Directory *tmp = cur;
             cur = dynamic_cast<Directory*>(f);
@@ -115,7 +121,8 @@ bool FileSystem::deleteDir(const string& name,const string& user, bool recursive
                 return true;
             }
         }
-    }
+    }else
+        std::cout<<"Permisssion denied\n";
     return false;
 }
 

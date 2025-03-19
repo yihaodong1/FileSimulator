@@ -80,8 +80,10 @@ bool ClientInterface::execueCommand(const std::vector<string>& cmd) {
         #endif
     }else if(cmd[0] == "help"){
         showHelp();
-    }else// exit and quit was handled in VFS
-        return false;
+    }else{// exit and quit was handled in VFS
+        std::cout<<"Invalid argument\n";
+        return true;// if return false, the program would exits
+    }
     return true;
 }
 
@@ -193,6 +195,7 @@ bool ClientInterface::changeDir(const string& path) {
             return true;
         }
     }
+    std::cout<< "Path does not exit\n";
     return false;
 }
 
