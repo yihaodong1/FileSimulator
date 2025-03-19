@@ -33,7 +33,7 @@ bool ClientInterface::execueCommand(const std::vector<string>& cmd) {
                 fprintf(stderr, "ClientInterface::createFile failed\n");
             }
         }
-        filesystem->display();
+        /*filesystem->display();*/
     }else if(cmd[0] == "delete"){
         size_t len = cmd.size();
         for(size_t i = 1; i < len; i++){
