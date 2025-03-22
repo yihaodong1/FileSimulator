@@ -10,12 +10,25 @@ std::vector<string> ClientInterface::parseCommand(const string& cmdLine) {
     // note 1: split by whitespace, you can use strtok() in c or istringstream in c++ to get tokens
     // note 2: handle quote string in two bounds for per token
 
-    std::istringstream iss(cmdLine);
+    size_t index = cmdLine.find('\"');
     string buffer;
     std::vector<string> v;
-    while(getline(iss, buffer, ' '))
-    {
-        v.push_back(buffer);
+    if(index != string::npos){ // this cmdLine is write
+        string s;
+        s.assign(cmdLine, 0, index - 1);
+        std::istringstream iss(s);
+        while(getline(iss, buffer, ' '))
+        {
+            v.push_back(buffer);
+        }
+        s.assign(cmdLine, index, cmdLine.length());
+        v.push_back(s);
+    }else{
+        std::istringstream iss(cmdLine);
+        while(getline(iss, buffer, ' '))
+        {
+            v.push_back(buffer);
+        }
     }
     return v;
 }
@@ -44,6 +57,7 @@ bool ClientInterface::execueCommand(const std::vector<string>& cmd) {
     }else if(cmd[0] == "read"){
         size_t len = cmd.size();
         for(size_t i = 1; i < len; i++){
+            std::cout<<"=== " + cmd[i] + " ==="<<std::endl;
             std::cout<<readFile(cmd[i])<<std::endl;
         }
     }else if(cmd[0] == "write"){
@@ -161,7 +175,9 @@ bool ClientInterface::writeFile(const string& name, const string& data) {
     uint64_t i = filesystem->search(name, "file");
     File *f = dynamic_cast<File*>(filesystem->getCurrentDir()->getChild(i));
     if(f){
-        f->write(data);
+        string s;
+        s.assign(data.begin() + 1, data.end() - 1);
+        f->write(s);
         return true;
     }
     return false;
@@ -203,7 +219,10 @@ void ClientInterface::listCurrentDir() {
     // TODO: List all contents in current directory, no return value
     // note 1: print each child's name in current directory per line
 
-    filesystem->getCurrentDir()->display();
+    std::vector<FileObj*>v = filesystem->getCurrentDir()->getAll();
+    for(auto &it: v){
+        std::cout<<it->getName()<<std::endl;
+    }
 }
 
 string ClientInterface::getCurrentPath() const {
