@@ -37,7 +37,7 @@ if(MSVC)
         VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} 
     )
 elseif(MINGW OR CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)
+    target_compile_options(${PROJECT_NAME} PRIVATE -g -Wall -Wextra -pedantic)
 endif()
 
 # Windows 平台的子系统设置 

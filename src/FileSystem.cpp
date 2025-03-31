@@ -132,21 +132,21 @@ uint64_t FileSystem::search(const string& name, const string& type) {
     // note 1: try to find relative path (current path + name) in config_table
     // note 2: try to find absolute path (from root) in config_table first
     
-    FileObj *f = resolvePath(name); // f could refer to file or directory
-    if(f)
-        return f->getInode();
-    else
-        return 0;
-    /*string fullname = cur->getPath()+name;*/
-    /*if(type == "directory")*/
-    /*    fullname += "/";*/
-    /*if(config_table.find(fullname) == config_table.end()){*/
+    /*FileObj *f = resolvePath(name); // f could refer to file or directory*/
+    /*if(f && f->getType() == type)*/
+    /*    return f->getInode();*/
+    /*else*/
     /*    return 0;*/
-    /*}*/
-    /*uint64_t i = config_table.find(fullname)->second;*/
-    /*if(cur->getChild(i)->getType() == type)*/
-    /*    return i;*/
-    /*return 0;*/
+    string fullname = cur->getPath()+name;
+    if(type == "directory")
+        fullname += "/";
+    if(config_table.find(fullname) == config_table.end()){
+        return 0;
+    }
+    uint64_t i = config_table.find(fullname)->second;
+    if(cur->getChild(i)->getType() == type)
+        return i;
+    return 0;
 
 }
 
@@ -227,13 +227,13 @@ FileObj* FileSystem::resolvePath(const string& path) {
             tmp = tmp->getParent();
          }else{
             string fullname = tmp->getPath()+buffer;
-            if(config_table.find(fullname) == config_table.end()){
-                if(config_table.find(fullname + "/") == config_table.end()){
-                    /*fprintf(stderr, "FileSystem::resolvePath not found\n");*/
-                    return nullptr;
-                }else
-                    fullname += "/";
-            }
+            /*if(config_table.find(fullname) == config_table.end()){*/
+            if(config_table.find(fullname + "/") == config_table.end()){
+                /*fprintf(stderr, "FileSystem::resolvePath not found\n");*/
+                return nullptr;
+            }else
+                fullname += "/";
+            /*}*/
             uint64_t i = config_table.find(fullname)->second;
             tmp = dynamic_cast<Directory *>(tmp)->getChild(i);
         }
