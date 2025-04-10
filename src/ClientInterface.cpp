@@ -98,7 +98,7 @@ bool ClientInterface::execueCommand(const std::vector<string>& cmd) {
         std::cout<<"Invalid argument\n";
         return true;// if return false, the program would exits
     }
-    filesystem->display();
+    // filesystem->display();
     return true;
 }
 
