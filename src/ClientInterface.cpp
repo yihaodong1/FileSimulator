@@ -165,7 +165,7 @@ string ClientInterface::readFile(const string& name) {
     // note 2: cast to File type and read content
     uint64_t i = filesystem->search(name, "file");
     File *f = dynamic_cast<File*>(filesystem->getCurrentDir()->getChild(i));
-    if(f->getOwner() != username && username != "root")
+    if(!f || (f->getOwner() != username && username != "root") || f->getType() == "directory")
         return string();
     string content = "=== " + name + " ===\n";
     if(f)
@@ -183,7 +183,7 @@ bool ClientInterface::writeFile(const string& name, const string& data) {
 
     uint64_t i = filesystem->search(name, "file");
     File *f = dynamic_cast<File*>(filesystem->getCurrentDir()->getChild(i));
-    if(f && (f->getOwner() == username || username == "root")){
+    if(f && (f->getOwner() == username || username == "root") && f->getType() == "file"){
         string s;
         s.assign(data.begin() + 1, data.end() - 1);
         f->write(s);
