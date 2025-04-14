@@ -4,6 +4,7 @@ FileSystem::FileSystem(const string& username, const uint64_t& inode)
     : root(new Directory("", username, inode, nullptr)), cur(root), username(username) {
     // no change
     users.insert(username);
+    config_table.insert(std::pair("/", InodeFactory::generateInode()));
 }
 
 // Navigation
@@ -216,6 +217,8 @@ FileObj* FileSystem::resolvePath(const string& path) {
         tmp = root;
     else
         tmp = cur;
+    if(path == "/")
+        return root;// patch for "/"
     std::istringstream iss(path);
     string buffer;
     std::vector<string> v;

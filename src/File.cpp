@@ -17,9 +17,9 @@ bool File::write(const string &data) {
     // for example, when you wrote "Hello PA-1\n" in command line, data will be "Hello PA-1\\n"
     size_t pos = content.size();
     content += data;
-    while ((pos = content.find("\\\\n", pos)) != std::string::npos) {
-        content.replace(pos, 3, "\n");
-        pos += 2; // 移动到"\n"之后
+    while ((pos = content.find("\\n", pos)) != std::string::npos) {
+        content.replace(pos, 2, "\n");
+        pos += 1; // 移动到"\n"之后
     }
     return true;
 }

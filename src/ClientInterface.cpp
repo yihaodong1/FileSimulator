@@ -57,13 +57,16 @@ bool ClientInterface::execueCommand(const std::vector<string>& cmd) {
     }else if(cmd[0] == "read"){
         size_t len = cmd.size();
         for(size_t i = 1; i < len; i++){
-            std::cout<<"=== " + cmd[i] + " ==="<<std::endl;
-            std::cout<<readFile(cmd[i])<<std::endl;
+            if(readFile(cmd[i]).empty())
+                fprintf(stderr, "ClientInterface::read failed\n");
+            else
+                std::cout<<readFile(cmd[i])<<std::endl;
         }
     }else if(cmd[0] == "write"){
-        writeFile(cmd[1], cmd[2]);
+        if(!writeFile(cmd[1], cmd[2]))
+            fprintf(stderr, "ClientInterface::write failed\n");
     }else if(cmd[0] == "mkdir"){
-        if(!createDir(cmd[1])){
+        if(cmd.size() > 1 && !createDir(cmd[1])){
             fprintf(stderr, "ClientInterface::createDir failed\n");
         }
     }else if(cmd[0] == "rmdir"){
@@ -76,7 +79,9 @@ bool ClientInterface::execueCommand(const std::vector<string>& cmd) {
             fprintf(stderr, "ClientInterface::deleteDir failed\n");
         }
     }else if(cmd[0] == "cd"){
-        if(!changeDir(cmd[1])){
+        if(cmd.size() == 1){
+            fprintf(stderr, "Please give the directory to change\n");
+        }else if(!changeDir(cmd[1])){
             fprintf(stderr, "ClientInterface::changeDir failed\n");
         }
     }else if(cmd[0] == "ls"){
@@ -160,8 +165,11 @@ string ClientInterface::readFile(const string& name) {
     // note 2: cast to File type and read content
     uint64_t i = filesystem->search(name, "file");
     File *f = dynamic_cast<File*>(filesystem->getCurrentDir()->getChild(i));
+    if(f->getOwner() != username && username != "root")
+        return string();
+    string content = "=== " + name + " ===\n";
     if(f)
-        return f->read();
+        return content + f->read();
     else
         assert(0);
 
@@ -175,7 +183,7 @@ bool ClientInterface::writeFile(const string& name, const string& data) {
 
     uint64_t i = filesystem->search(name, "file");
     File *f = dynamic_cast<File*>(filesystem->getCurrentDir()->getChild(i));
-    if(f){
+    if(f && (f->getOwner() == username || username == "root")){
         string s;
         s.assign(data.begin() + 1, data.end() - 1);
         f->write(s);
